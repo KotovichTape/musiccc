@@ -45,13 +45,9 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
 
-            role = form.cleaned_data['role']
             phone = form.cleaned_data.get('phone', '')
             
-            if role == 'client':
-                Client.objects.create(user=user, phone=phone)
-            else:
-                Employee.objects.create(user=user, role=role, phone=phone)
+            Client.objects.create(user=user, phone=phone)
 
             messages.success(request, 'Регистрация успешна! Теперь вы можете войти.')
             return redirect('login')
@@ -725,14 +721,10 @@ def create_user(request):
         if form.is_valid():
             user = form.save()
             
-            role = form.cleaned_data['role']
             phone = form.cleaned_data.get('phone', '')
             
-            if role == 'client':
-                Client.objects.create(user=user, phone=phone)
-            else:
-                Employee.objects.create(user=user, role=role, phone=phone)
-            
+            Client.objects.create(user=user, phone=phone)
+
             SystemLog.objects.create(
                 user=request.user,
                 action=f"Создан новый пользователь: {user.username} с ролью {role}"
