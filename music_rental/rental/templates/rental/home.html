@@ -1,0 +1,21 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="text-center">
+    <h1>Добро пожаловать в систему аренды оборудования</h1>
+    <p>Вы можете взять в аренду технику быстро и удобно.</p>
+
+    {% if request.user.is_authenticated %}
+        {% if request.user.client %}
+            <a href="{% url 'equipment_list' %}" class="btn btn-primary">Перейти в каталог</a>
+        {% elif request.user.employee %}
+            <a href="{% url 'manage_rental_requests' %}" class="btn btn-warning">Управлять заявками</a>
+        {% endif %}
+    {% else %}
+        <a href="{% url 'login' %}" class="btn btn-success">Войти</a>
+        <a href="{% url 'register' %}" class="btn btn-outline-primary">Регистрация</a>
+    {% endif %}
+</div>
+{% endblock %}

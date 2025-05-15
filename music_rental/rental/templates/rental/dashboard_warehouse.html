@@ -1,0 +1,131 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Кабинет складского работника{% endblock %}
+
+{% block content %}
+<h2>Кабинет складского работника</h2>
+<p>Выдача и приём возврата оборудования.</p>
+<a href="{% url 'logout' %}" class="btn btn-danger">Выйти</a>
+
+<h3 class="mt-4">🕒 Недавно выданное оборудование</h3>
+{% if recent_issues %}
+<table class="table">
+    <tr>
+        <th>Клиент</th>
+        <th>Оборудование</th>
+        <th>Даты аренды</th>
+        <th>Время выдачи</th>
+        <th>Статус</th>
+    </tr>
+    {% for rental in recent_issues %}
+    <tr>
+        <td>{{ rental.client.user.username }}</td>
+        <td>{{ rental.equipment.name }}</td>
+        <td>{{ rental.start_date|date:"d.m.Y" }} - {{ rental.end_date|date:"d.m.Y" }}</td>
+        <td>{{ rental.issued_date|date:"d.m.Y H:i" }}</td>
+        <td>🔵 Выдано</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>📭 Нет недавно выданного оборудования.</p>
+{% endif %}
+
+<h3 class="mt-4">📌 Актуальные заявки</h3>
+{% if active_rentals %}
+<table class="table">
+    <tr>
+        <th>Клиент</th>
+        <th>Оборудование</th>
+        <th>Даты</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+    {% for rental in active_rentals %}
+    <tr id="rental-{{ rental.id }}">
+        <td>{{ rental.client.user.username }}</td>
+        <td>{{ rental.equipment.name }}</td>
+        <td>{{ rental.start_date|date:"d.m.Y" }} - {{ rental.end_date|date:"d.m.Y" }}</td>
+        <td class="rental-status">
+            {% if rental.status == "issued" %}
+                🔵 Выдано
+            {% elif rental.status == "approved" %}
+                🟡 Ожидает выдачи
+            {% endif %}
+        </td>
+        <td>
+            {% if rental.status == "approved" %}
+                <form method="post" action="{% url 'issue_equipment' rental.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-sm">Выдать</button>
+                </form>
+            {% elif rental.status == "issued" %}
+                <form method="post" action="{% url 'return_equipment' rental.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning btn-sm">Принять возврат</button>
+                </form>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>✅ Нет актуальных заявок.</p>
+{% endif %}
+
+<h3 class="mt-4">📜 История возвратов</h3>
+{% if rental_history %}
+<table class="table">
+    <tr>
+        <th>Клиент</th>
+        <th>Оборудование</th>
+        <th>Даты аренды</th>
+        <th>Дата возврата</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+    {% for rental in rental_history %}
+    <tr id="rental-{{ rental.id }}">
+        <td>{{ rental.client.user.username }}</td>
+        <td>{{ rental.equipment.name }}</td>
+        <td>{{ rental.start_date|date:"d.m.Y" }} - {{ rental.end_date|date:"d.m.Y" }}</td>
+        <td>{{ rental.returned_date|date:"d.m.Y H:i" }}</td>
+        <td>🟢 Возвращено</td>
+        <td>
+            {% if not rental.equipment.needs_repair %}
+                <form method="post" action="/warehouse/send-to-technician/{{ rental.equipment.id }}/" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-info btn-sm">Отправить на проверку</button>
+                </form>
+            {% else %}
+                <span class="text-muted">На проверке</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>📭 История пуста.</p>
+{% endif %}
+
+<h3 class="mt-4">🔧 Оборудование в ремонте</h3>
+{% if equipment_in_repair %}
+<table class="table">
+    <tr>
+        <th>Оборудование</th>
+        <th>Категория</th>
+        <th>Статус</th>
+    </tr>
+    {% for equipment in equipment_in_repair %}
+    <tr>
+        <td>{{ equipment.name }}</td>
+        <td>{{ equipment.get_category_display }}</td>
+        <td>🔧 В ремонте</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>✅ Нет оборудования в ремонте.</p>
+{% endif %}
+
+{% endblock %}

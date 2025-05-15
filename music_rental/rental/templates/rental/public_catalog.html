@@ -1,0 +1,10 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Каталог оборудования{% endblock %}
+
+{% block content %}
+<div class="alert alert-info mt-4 text-center" style="max-width: 600px; margin: 0 auto;">
+    <h4>Войдите в систему</h4>
+    <p>Для просмотра каталога и оформления аренды необходимо <a href="{% url 'login' %}">войти</a> или <a href="{% url 'register' %}">зарегистрироваться</a>.</p>
+</div>
+{% endblock %} 

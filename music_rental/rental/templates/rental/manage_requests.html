@@ -1,0 +1,21 @@
+<h2>Управление заявками</h2>
+<table>
+    <tr>
+        <th>Клиент</th>
+        <th>Оборудование</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+    {% for req in requests %}
+    <tr>
+        <td>{{ req.client.user.username }}</td>
+        <td>{{ req.equipment.name }}</td>
+        <td>{{ req.get_status_display }}</td>
+        <td>
+            <a href="{% url 'approve_request' req.id %}">Подтвердить</a>
+            <a href="{% url 'reject_request' req.id %}">Отклонить</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{% url 'dashboard' %}">Назад</a>

@@ -1,0 +1,76 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<style>
+.reg-card {
+  min-width: 340px;
+  max-width: 400px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  background: #fff;
+  padding: 2.2em 2em 2em 2em;
+  margin: 0 auto;
+}
+.reg-card h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.2em;
+  text-align: center;
+}
+.reg-card input[type="text"],
+.reg-card input[type="password"],
+.reg-card input[type="email"],
+.reg-card select {
+  font-size: 1.1em;
+  padding: 0.7em 1em;
+  margin-bottom: 1.1em;
+  border-radius: 8px;
+  border: 1px solid #cfd8e3;
+  width: 100%;
+  box-sizing: border-box;
+}
+.reg-card .btn {
+  font-size: 1.1em;
+  padding: 0.7em 1em;
+  margin-top: 0.2em;
+  border-radius: 8px;
+}
+.reg-card .text-center a {
+  color: #2a6be0;
+  text-decoration: underline;
+  font-size: 1em;
+}
+</style>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="reg-card">
+    <h2>Регистрация</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div>
+        {{ form.username.label_tag }}
+        <input type="text" name="username" maxlength="150" required placeholder="Имя пользователя" class="form-control" />
+      </div>
+      <div>
+        {{ form.password.label_tag }}
+        <input type="password" name="password" required placeholder="Пароль" class="form-control" />
+      </div>
+      <div>
+        {{ form.role.label_tag }}
+        {{ form.role }}
+      </div>
+      <div>
+        {{ form.phone.label_tag }}
+        <input type="text" name="phone" maxlength="30" placeholder="Телефон" class="form-control" />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
+    </form>
+    <div class="mt-3 text-center">
+      <a href="{% url 'login' %}">Уже есть аккаунт? Войти</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

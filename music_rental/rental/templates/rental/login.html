@@ -1,0 +1,66 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<style>
+.login-card {
+  min-width: 340px;
+  max-width: 370px;
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  background: #fff;
+  padding: 2.2em 2em 2em 2em;
+  margin: 0 auto;
+}
+.login-card h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.2em;
+  text-align: center;
+}
+.login-card input[type="text"],
+.login-card input[type="password"] {
+  font-size: 1.1em;
+  padding: 0.7em 1em;
+  margin-bottom: 1.1em;
+  border-radius: 8px;
+  border: 1px solid #cfd8e3;
+  width: 100%;
+  box-sizing: border-box;
+}
+.login-card .btn {
+  font-size: 1.1em;
+  padding: 0.7em 1em;
+  margin-top: 0.2em;
+  border-radius: 8px;
+}
+.login-card .text-center a {
+  color: #2a6be0;
+  text-decoration: underline;
+  font-size: 1em;
+}
+</style>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="login-card">
+    <h2>Вход в систему</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      <div>
+        {{ form.username.label_tag }}
+        <input type="text" name="username" maxlength="150" required placeholder="Имя пользователя" autocomplete="username" class="form-control" />
+      </div>
+      <div>
+        {{ form.password.label_tag }}
+        <input type="password" name="password" required placeholder="Пароль" autocomplete="current-password" class="form-control" />
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Войти</button>
+    </form>
+    <div class="mt-3 text-center">
+      <a href="{% url 'register' %}">Нет аккаунта? Зарегистрироваться</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

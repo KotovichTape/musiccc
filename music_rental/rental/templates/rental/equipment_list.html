@@ -1,0 +1,9 @@
+<h2>Список доступного оборудования</h2>
+<ul>
+    {% for item in equipment %}
+        <li>{{ item.name }} - {{ item.description }}
+            <a href="{% url 'create_rental_request' item.id %}">Арендовать</a>
+        </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'dashboard' %}">Назад</a>

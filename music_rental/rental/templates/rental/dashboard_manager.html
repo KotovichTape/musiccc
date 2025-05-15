@@ -1,0 +1,98 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Кабинет менеджера{% endblock %}
+
+{% block content %}
+<h2>Кабинет менеджера</h2>
+<p>Управление заявками на аренду оборудования.</p>
+<div class="mb-3">
+    <a href="{% url 'rental_reports' %}" class="btn btn-outline-primary">Отчёты по аренде</a>
+    <a href="{% url 'logout' %}" class="btn btn-danger ms-2">Выйти</a>
+</div>
+
+<h3 class="mt-4">📌 Ожидающие заявки</h3>
+{% if pending_requests %}
+<table class="table">
+    <tr>
+        <th>Клиент</th>
+        <th>Оборудование</th>
+        <th>Даты</th>
+        <th>Цена</th>
+        <th>Статус</th>
+        <th>Действия</th>
+    </tr>
+    {% for rental in pending_requests %}
+    <tr id="rental-{{ rental.id }}">
+        <td>{{ rental.client.user.username }}</td>
+        <td>{{ rental.equipment.name }}</td>
+        <td>{{ rental.start_date|date:"d.m.Y" }} - {{ rental.end_date|date:"d.m.Y" }}</td>
+        <td>{{ rental.total_price }} ₽</td>
+        <td class="rental-status">
+                🟡 Ожидает подтверждения
+        </td>
+        <td>
+            <form method="post" action="{% url 'approve_request' rental.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-sm">Подтвердить</button>
+            </form>
+            <form method="post" action="{% url 'reject_request' rental.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Отклонить</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>✅ Нет заявок, ожидающих подтверждения.</p>
+{% endif %}
+
+<h3 class="mt-4">📜 Активные договоры</h3>
+{% if active_contracts %}
+<table class="table">
+    <tr>
+        <th>Клиент</th>
+        <th>Оборудование</th>
+        <th>Даты</th>
+        <th>Статус</th>
+        <th>Сумма</th>
+    </tr>
+    {% for contract in active_contracts %}
+    <tr>
+        <td>{{ contract.client.user.username }}</td>
+        <td>{{ contract.equipment.name }}</td>
+        <td>{{ contract.start_date|date:"d.m.Y" }} - {{ contract.end_date|date:"d.m.Y" }}</td>
+        <td>🟢 Активный</td>
+        <td>{{ contract.total_price }} ₽</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>📭 Нет активных договоров.</p>
+            {% endif %}
+
+<h3 class="mt-4">📊 Ожидающие оплаты счета</h3>
+{% if pending_invoices %}
+<table class="table">
+    <tr>
+        <th>Клиент</th>
+        <th>Оборудование</th>
+        <th>Сумма</th>
+        <th>Срок оплаты</th>
+        <th>Статус</th>
+    </tr>
+    {% for invoice in pending_invoices %}
+    <tr>
+        <td>{{ invoice.contract.client.user.username }}</td>
+        <td>{{ invoice.contract.equipment.name }}</td>
+        <td>{{ invoice.amount }} ₽</td>
+        <td>{{ invoice.due_date|date:"d.m.Y" }}</td>
+        <td>🟡 Ожидает оплаты</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>📭 Нет счетов, ожидающих оплаты.</p>
+{% endif %}
+
+{% endblock %}

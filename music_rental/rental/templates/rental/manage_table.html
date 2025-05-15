@@ -1,0 +1,36 @@
+{% extends "rental/base.html" %}
+{% load custom_filters %}
+
+{% block title %}Управление {{ localized_name }}{% endblock %}
+
+{% block content %}
+<h2>Управление {{ localized_name }}</h2>
+
+<form method="GET">
+    <input type="text" name="search" value="{{ search_query }}" placeholder="Поиск..." class="form-control">
+    <button type="submit" class="btn btn-primary mt-2">Найти</button>
+</form>
+
+<table class="table mt-3">
+    <tr>
+        {% for field in fields %}
+        <th>{{ field }}</th>
+        {% endfor %}
+        <th>Действия</th>
+    </tr>
+    {% for obj in objects %}
+    <tr>
+        {% for field_name in field_names %}
+        <td>{{ obj|get_attr:field_name }}</td>
+        {% endfor %}
+        <td>
+            <a href="{% url 'edit_object' table_name=table_name object_id=obj.id %}" class="btn btn-sm btn-warning">Редактировать</a>
+            <a href="{% url 'delete_object' table_name=table_name object_id=obj.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Удалить?');">Удалить</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="{% url 'add_object' table_name=table_name %}" class="btn btn-success">Добавить запись</a>
+
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Счета за аренду{% endblock %}
+
+{% block content %}
+<h2>Счета за аренду</h2>
+{% if invoices %}
+<table class="table table-striped table-bordered">
+    <tr>
+        <th>Оборудование</th>
+        <th>Сумма</th>
+        <th>Статус</th>
+        <th>Срок оплаты</th>
+        <th>Действия</th>
+    </tr>
+    {% for invoice in invoices %}
+    <tr>
+        <td>{{ invoice.contract.equipment.name }}</td>
+        <td>{{ invoice.amount }} ₽</td>
+        <td>{{ invoice.get_status_display }}</td>
+        <td>{{ invoice.due_date|date:"d.m.Y" }}</td>
+        <td>
+            {% if invoice.status == 'pending' %}
+                <form method="post" action="#" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-success pay-invoice-btn" data-invoice-id="{{ invoice.id }}">Оплатить</button>
+                </form>
+            {% elif invoice.status == 'paid' %}
+                <span class="text-success">Оплачен</span>
+            {% else %}
+                <span class="text-muted">{{ invoice.get_status_display }}</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>У вас пока нет счетов за аренду.</p>
+{% endif %}
+<a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">Назад</a>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.pay-invoice-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const invoiceId = this.dataset.invoiceId;
+            fetch(`/client/pay-invoice/${invoiceId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.textContent = 'Оплачено';
+                    this.disabled = true;
+                    this.classList.remove('btn-success');
+                    this.classList.add('btn-secondary');
+                } else {
+                    alert(data.error || 'Ошибка оплаты');
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %} 

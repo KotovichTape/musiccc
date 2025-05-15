@@ -1,0 +1,35 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Управление базой данных{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Управление базой данных</h2>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-primary h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Скачать резервную копию</h5>
+                    <p class="card-text">Скачайте актуальную резервную копию базы данных для хранения или переноса.</p>
+                    <a href="{% url 'download_db_backup' %}" class="btn btn-primary">Скачать резервную копию</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-warning h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">Восстановить из файла</h5>
+                    <p class="card-text">Загрузите файл резервной копии для восстановления базы данных.</p>
+                    <form method="post" enctype="multipart/form-data" action="{% url 'restore_database' %}">
+                        {% csrf_token %}
+                        <div class="mb-2">
+                            <input type="file" name="backup_file" accept=".sqlite3,.db,.bak" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning">Восстановить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

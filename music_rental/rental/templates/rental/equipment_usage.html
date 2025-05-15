@@ -1,0 +1,16 @@
+<h2>Выдача и возврат оборудования</h2>
+
+<ul>
+    {% for usage in usage_list %}
+        <li>
+            {{ usage.rental_contract.rental_request.equipment.name }} - 
+            {% if usage.returned %}
+                Возвращено
+            {% else %}
+                <a href="{% url 'return_equipment' usage.id %}">Возврат</a>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'dashboard' %}">Назад</a>

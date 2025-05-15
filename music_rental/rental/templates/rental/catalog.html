@@ -1,0 +1,24 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Каталог оборудования{% endblock %}
+
+{% block content %}
+<h2>Каталог оборудования</h2>
+<div class="row">
+    {% for item in equipment %}
+    <div class="col-md-4">
+        <div class="card mb-3">
+            {% if item.photo %}
+            <img src="{{ item.photo.url }}" class="card-img-top" alt="{{ item.name }}" style="object-fit:cover;max-height:220px;">
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ item.name }}</h5>
+                <p class="card-text">{{ item.description }}</p>
+                <p><strong>Цена за день:</strong> {{ item.price_per_day }} руб.</p>
+                <a href="{% url 'create_rental_request' item.id %}" class="btn btn-primary">Арендовать</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

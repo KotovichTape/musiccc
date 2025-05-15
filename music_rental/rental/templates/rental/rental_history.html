@@ -1,0 +1,26 @@
+{% extends "rental/base.html" %}
+
+{% block title %}История аренд{% endblock %}
+
+{% block content %}
+<h2>Мои аренды</h2>
+
+{% if rentals %}
+    <table class="table">
+        <tr>
+            <th>Оборудование</th>
+            <th>Статус</th>
+            <th>Дата запроса</th>
+        </tr>
+        {% for rental in rentals %}
+        <tr>
+            <td>{{ rental.equipment.name }}</td>
+            <td>{{ rental.get_status_display }}</td>
+            <td>{{ rental.request_date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Вы еще не арендовали оборудование.</p>
+{% endif %}
+{% endblock %}

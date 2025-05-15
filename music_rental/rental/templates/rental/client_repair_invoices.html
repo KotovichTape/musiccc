@@ -1,0 +1,44 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Счета за ремонт{% endblock %}
+
+{% block content %}
+<h2>Счета за ремонт</h2>
+{% if repair_invoices %}
+<table class="table table-striped table-bordered">
+    <tr>
+        <th>Оборудование</th>
+        <th>Описание ремонта</th>
+        <th>Сумма</th>
+        <th>Статус</th>
+        <th>Срок оплаты</th>
+        <th>Действия</th>
+    </tr>
+    {% for invoice in repair_invoices %}
+    <tr>
+        <td>{{ invoice.repair.equipment.name }}</td>
+        <td>{{ invoice.repair.description|default:"-" }}</td>
+        <td>{{ invoice.amount }} ₽</td>
+        <td>{{ invoice.get_status_display }}</td>
+        <td>{{ invoice.due_date|date:"d.m.Y" }}</td>
+        <td>
+            {% if invoice.status == 'pending' %}
+                <form method="post" action="#" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-success" disabled>Оплатить</button>
+                </form>
+            {% elif invoice.status == 'paid' %}
+                <span class="text-success">Оплачен</span>
+            {% else %}
+                <span class="text-muted">{{ invoice.get_status_display }}</span>
+            {% endif %}
+            <a href="{% url 'download_repair_invoice' invoice.id %}" class="btn btn-outline-primary btn-sm ms-2">Скачать счет</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>У вас пока нет счетов за ремонт.</p>
+{% endif %}
+<a href="{% url 'dashboard' %}" class="btn btn-secondary mt-3">Назад</a>
+{% endblock %} 

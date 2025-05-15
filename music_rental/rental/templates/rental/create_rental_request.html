@@ -1,0 +1,54 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Оформление аренды{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 600px;">
+    <h2 class="mb-4">Оформление аренды: {{ equipment.name }}</h2>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <p><strong>Категория:</strong> {{ equipment.category }}</p>
+            <p><strong>Цена за день:</strong> {{ equipment.price_per_day }} руб.</p>
+            <p><strong>Описание:</strong> {{ equipment.description|default:'-' }}</p>
+            <form method="post" id="rental-form">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_start_date" class="form-label">Start date:</label>
+                    <input type="date" name="start_date" class="form-control" id="id_start_date" required value="{{ form.start_date.value|default:'' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="id_end_date" class="form-label">End date:</label>
+                    <input type="date" name="end_date" class="form-control" id="id_end_date" required value="{{ form.end_date.value|default:'' }}">
+                </div>
+                <div class="mb-3">
+                    <strong>Стоимость аренды:</strong> <span id="rental-cost">0</span> руб.
+                </div>
+                <button type="submit" class="btn btn-primary">Подтвердить аренду</button>
+                <a href="{% url 'catalog' %}" class="btn btn-secondary ms-2">Назад</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const pricePerDay = parseFloat("{{ equipment.price_per_day|floatformat:2 }}".replace(',', '.'));
+const costSpan = document.getElementById('rental-cost');
+const startInput = document.getElementById('id_start_date');
+const endInput = document.getElementById('id_end_date');
+
+function updateCost() {
+    const start = new Date(startInput.value);
+    const end = new Date(endInput.value);
+    if (start && end && end > start) {
+        const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+        const cost = days * pricePerDay;
+        costSpan.textContent = cost.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    } else {
+        costSpan.textContent = '0.00';
+    }
+}
+startInput.addEventListener('change', updateCost);
+endInput.addEventListener('change', updateCost);
+document.addEventListener('DOMContentLoaded', updateCost);
+</script>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Добавить в {{ table_name }}{% endblock %}
+
+{% block content %}
+<h2>Добавить запись в {{ table_name }}</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Добавить</button>
+</form>
+
+<a href="{% url 'manage_table' table_name=table_name %}" class="btn btn-secondary mt-2">Назад</a>
+
+{% endblock %}

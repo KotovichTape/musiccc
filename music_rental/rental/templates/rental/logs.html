@@ -1,0 +1,25 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Логи системы{% endblock %}
+
+{% block content %}
+<h2>Логи системы</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Пользователь</th>
+            <th>Действие</th>
+            <th>Дата</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.user.username }}</td>
+            <td>{{ log.action }}</td>
+            <td>{{ log.timestamp }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

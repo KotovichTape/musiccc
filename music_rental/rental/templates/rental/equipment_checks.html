@@ -1,0 +1,10 @@
+<h2>Проверки оборудования</h2>
+<ul>
+    {% for check in checks %}
+        <li>
+            {{ check.equipment.name }} - {{ check.status }}
+            <a href="{% url 'add_equipment_repair' check.equipment.id %}">Отметить как отремонтированное</a>
+        </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'dashboard' %}">Назад</a>

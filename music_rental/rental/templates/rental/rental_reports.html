@@ -1,0 +1,126 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Отчёты по аренде{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Отчёты по аренде</h2>
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Всего заявок</h5>
+                <p class="display-6">{{ total_rentals }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Подтверждено заявок</h5>
+                <p class="display-6">{{ approved_requests }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Общий доход</h5>
+                <p class="display-6">{{ total_income }} ₽</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-4">
+    <h4>Популярное оборудование</h4>
+    <canvas id="equipmentChart" height="80"></canvas>
+</div>
+
+<div class="mb-4">
+    <h4>Доход по категориям</h4>
+    <canvas id="incomeCategoryChart" height="80"></canvas>
+</div>
+
+<div class="mb-4">
+    <h4>Количество аренд по категориям</h4>
+    <canvas id="countCategoryChart" height="80"></canvas>
+</div>
+
+<div class="mb-4">
+    <h4>Статистика по месяцам</h4>
+    <table class="table table-bordered table-striped">
+        <tr>
+            <th>Месяц</th>
+            <th>Доход</th>
+            <th>Кол-во счетов</th>
+        </tr>
+        {% for m in monthly_stats %}
+        <tr>
+            <td>{{ m.month }}</td>
+            <td>{{ m.total_income|default:0 }} ₽</td>
+            <td>{{ m.invoice_count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'dashboard_manager' %}" class="btn btn-secondary">Назад</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{ category_income|json_script:'category-income-data' }}
+{{ category_count|json_script:'category-count-data' }}
+<script>
+const equipmentLabels = [{% for eq in equipment_stats %}'{{ eq.name }}'{% if not forloop.last %}, {% endif %}{% endfor %}];
+const equipmentData = [{% for eq in equipment_stats %}{{ eq.rental_count }}{% if not forloop.last %}, {% endif %}{% endfor %}];
+
+const categoryIncome = JSON.parse(document.getElementById('category-income-data').textContent);
+const categoryCount = JSON.parse(document.getElementById('category-count-data').textContent);
+const categoryLabels = Object.keys(categoryIncome);
+const incomeData = categoryLabels.map(k => categoryIncome[k]);
+const countData = categoryLabels.map(k => categoryCount[k]);
+
+new Chart(document.getElementById('equipmentChart'), {
+    type: 'bar',
+    data: {
+        labels: equipmentLabels,
+        datasets: [{
+            label: 'Количество аренд',
+            data: equipmentData,
+            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+        }]
+    },
+    options: {responsive: true, plugins: {legend: {display: false}}}
+});
+new Chart(document.getElementById('incomeCategoryChart'), {
+    type: 'bar',
+    data: {
+        labels: categoryLabels,
+        datasets: [{
+            label: 'Доход (₽)',
+            data: incomeData,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)'
+        }]
+    },
+    options: {responsive: true, plugins: {legend: {display: false}}}
+});
+new Chart(document.getElementById('countCategoryChart'), {
+    type: 'pie',
+    data: {
+        labels: categoryLabels,
+        datasets: [{
+            label: 'Количество аренд',
+            data: countData,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.6)',
+                'rgba(54, 162, 235, 0.6)',
+                'rgba(255, 206, 86, 0.6)',
+                'rgba(75, 192, 192, 0.6)'
+            ]
+        }]
+    },
+    options: {responsive: true}
+});
+</script>
+{% endblock %}

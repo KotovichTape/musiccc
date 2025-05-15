@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Музыкальная аренда{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body>
+
+<header class="header">
+    <div class="container">
+        <div class="site-title">
+            <a href="{% url 'public_catalog' %}" style="color:#fff;text-decoration:none;">🎵 Аренда оборудования</a>
+        </div>
+        <nav>
+            <ul class="nav">
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Профиль</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'catalog' %}">Каталог</a></li>
+                    <li class="nav-item"><a class="nav-link text-danger" href="{% url 'logout' %}">Выйти</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Войти</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Регистрация</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container mt-4">
+    {% block content %}{% endblock %}
+</div>
+
+<footer>
+    <div class="container d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+            <b>Аренда оборудования</b> &copy; 2024<br>
+            Аренда качественного музыкального оборудования для любых мероприятий.
+        </div>
+        <div class="text-end">
+            <div>Контакты: <a href="mailto:info@music-rent.ru" style="color:#bfc9d8;">info@music-rent.ru</a></div>
+            <div>+7 (123) 456-78-90</div>
+        </div>
+    </div>
+</footer>
+
+<div id="flash-message" class="alert alert-success" style="display: none; position: fixed; top: 10px; right: 10px; z-index: 1000;"></div>
+<script>
+function showMessage(message, type="success") {
+    let flashMessage = document.getElementById("flash-message");
+    flashMessage.textContent = message;
+    flashMessage.className = `alert alert-${type}`;
+    flashMessage.style.display = "block";
+    setTimeout(() => {
+        flashMessage.style.display = "none";
+    }, 3000);
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

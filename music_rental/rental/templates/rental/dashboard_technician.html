@@ -1,0 +1,178 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Кабинет технического специалиста{% endblock %}
+
+{% block content %}
+<style>
+  .modal-bg {
+    display: none; position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.4); z-index: 1000; align-items: center; justify-content: center;
+  }
+  .modal-bg.active { display: flex; }
+  .modal-content {
+    background: #fff; padding: 2em 2em 1em 2em; border-radius: 12px; max-width: 400px; margin: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .modal-content h4 { margin-top: 0; }
+  .modal-content label { font-weight: 500; margin-bottom: 0.2em; display: block; }
+  .modal-content input, .modal-content textarea { width: 100%; margin-bottom: 1em; }
+  .modal-content button { margin-right: 0.5em; }
+  .btn-warning { font-weight: 600; }
+  .success-toast {
+    display: none; position: fixed; top: 30px; right: 30px; background: #4caf50; color: #fff; padding: 1em 2em; border-radius: 8px; z-index: 2000; font-size: 1.1em;
+  }
+  .success-toast.active { display: block; }
+  table.table th, table.table td { vertical-align: middle; }
+</style>
+
+<div class="success-toast" id="successToast">Ремонт успешно сохранён!</div>
+
+<h2>Кабинет технического специалиста</h2>
+<p>Вы можете проверять и ремонтировать оборудование.</p>
+<a href="{% url 'logout' %}" class="btn btn-danger">Выйти</a>
+
+<h3>Проверка оборудования</h3>
+{% if waiting_equipment %}
+<table class="table table-striped table-bordered">
+    <tr>
+        <th>Название</th>
+        <th>Статус</th>
+        <th>Примечания</th>
+        <th>Действия</th>
+    </tr>
+    {% for check in waiting_equipment %}
+    <tr id="check-{{ check.id }}">
+        <td><b>{{ check.equipment.name }}</b></td>
+        <td class="status">🟡 {{ check.status }}</td>
+        <td>{{ check.notes|default:"-" }}</td>
+        <td>
+            <button class="btn btn-warning repair-btn" data-id="{{ check.id }}" data-eq="{{ check.equipment.name }}">Ремонтировать</button>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>❌ Нет оборудования для проверки.</p>
+{% endif %}
+
+<div class="modal-bg" id="repairModal">
+  <div class="modal-content">
+    <h4>Ремонт оборудования: <span id="modal-eq-name"></span></h4>
+    <form id="repairForm">
+      <input type="hidden" name="check_id" id="modal-check-id">
+      <div class="mb-2">
+        <label for="modal-description">Описание ремонта:</label>
+        <textarea name="description" id="modal-description" class="form-control" required placeholder="Что не работало, что сделано..."></textarea>
+      </div>
+      <div class="mb-2">
+        <label for="modal-cost">Стоимость ремонта (₽):</label>
+        <input type="number" name="cost" id="modal-cost" class="form-control" min="0" required placeholder="0">
+      </div>
+      <button type="submit" class="btn btn-success">Сохранить</button>
+      <button type="button" class="btn btn-secondary" id="closeModalBtn">Отмена</button>
+    </form>
+  </div>
+</div>
+
+<h3>История проверок</h3>
+{% if history_checks %}
+<table class="table table-striped table-bordered">
+    <tr>
+        <th>Название</th>
+        <th>Статус</th>
+        <th>Дата проверки</th>
+        <th>Примечания</th>
+    </tr>
+    {% for check in history_checks %}
+    <tr>
+        <td>{{ check.equipment.name }}</td>
+        <td>
+            {% if check.status == "checked_ok" %}
+                🟢 Проверено, исправно
+            {% elif check.status == "needs_repair" or check.status == "repaired" %}
+                🔴 Требуется ремонт
+            {% else %}
+                {{ check.status }}
+            {% endif %}
+        </td>
+        <td>{{ check.updated_at|date:"d.m.Y H:i"|default:"-" }}</td>
+        <td>{{ check.notes|default:"-" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>📭 История проверок пуста.</p>
+{% endif %}
+
+<h3>Завершенные ремонты</h3>
+{% if completed_repairs %}
+<table class="table table-striped table-bordered">
+    <tr>
+        <th>Оборудование</th>
+        <th>Дата завершения</th>
+        <th>Стоимость</th>
+        <th>Описание</th>
+    </tr>
+    {% for repair in completed_repairs %}
+    <tr>
+        <td>{{ repair.equipment.name }}</td>
+        <td>{{ repair.completed_at|date:"d.m.Y H:i"|default:"-" }}</td>
+        <td>{{ repair.repair_cost|default:"-" }} ₽</td>
+        <td>{{ repair.description|default:"-" }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>📭 Нет завершенных ремонтов.</p>
+{% endif %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.repair-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.getElementById('repairModal').classList.add('active');
+                document.getElementById('modal-check-id').value = this.dataset.id;
+                document.getElementById('modal-eq-name').textContent = this.dataset.eq;
+                document.getElementById('modal-description').value = '';
+                document.getElementById('modal-cost').value = '';
+            });
+        });
+        document.getElementById('closeModalBtn').onclick = function() {
+            document.getElementById('repairModal').classList.remove('active');
+        };
+        document.getElementById('repairForm').onsubmit = function(e) {
+            e.preventDefault();
+            const checkId = document.getElementById('modal-check-id').value;
+            const description = document.getElementById('modal-description').value;
+            const cost = document.getElementById('modal-cost').value;
+            fetch(`/perform-equipment-repair/${checkId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({description, cost})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Ремонт успешно сохранён!');
+                    document.getElementById('repairModal').classList.remove('active');
+                    setTimeout(() => window.location.reload(), 800);
+                } else {
+                    alert(data.error || 'Ошибка!');
+                }
+            })
+            .catch(error => {
+                alert('Ошибка при выполнении запроса.');
+            });
+        };
+        function showToast(msg) {
+            const toast = document.getElementById('successToast');
+            toast.textContent = msg;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 1500);
+        }
+    });
+</script>
+{% endblock %}

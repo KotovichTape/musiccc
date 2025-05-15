@@ -1,0 +1,114 @@
+body {
+    background: #f7f9fb;
+    color: #222;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header, header {
+    background: #2a3a5e;
+    color: #fff;
+    padding: 18px 0 14px 0;
+    box-shadow: 0 2px 8px rgba(42,58,94,0.04);
+    margin-bottom: 32px;
+}
+.header .container, header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.site-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+footer {
+    background: #222b3a;
+    color: #bfc9d8;
+    padding: 24px 0 12px 0;
+    margin-top: 48px;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.card {
+    border-radius: 14px !important;
+    box-shadow: 0 2px 12px rgba(42,58,94,0.07);
+    border: none;
+    margin-bottom: 24px;
+}
+.card-title {
+    font-weight: 600;
+}
+.btn, button {
+    border-radius: 8px !important;
+    font-weight: 500;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.btn-primary, .btn-outline-primary {
+    background: #2a6be0;
+    color: #fff;
+    border: none;
+}
+.btn-primary:hover, .btn-outline-primary:hover {
+    background: #1a4fa0;
+    color: #fff;
+}
+.btn-danger {
+    background: #e03a2a;
+    border: none;
+}
+.btn-danger:hover {
+    background: #b82a1a;
+}
+.btn-warning {
+    background: #f7b924;
+    color: #222;
+    border: none;
+}
+.btn-warning:hover {
+    background: #e0a800;
+    color: #222;
+}
+.form-control {
+    border-radius: 7px;
+    border: 1px solid #cfd8e3;
+    box-shadow: none;
+    transition: border 0.2s;
+}
+.form-control:focus {
+    border-color: #2a6be0;
+    box-shadow: 0 0 0 2px #2a6be033;
+}
+.table {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.table th {
+    background: #f0f4fa;
+    font-weight: 600;
+}
+.alert, .messages .alert {
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 18px;
+}
+::-webkit-scrollbar {
+    width: 8px;
+    background: #e9eef5;
+}
+::-webkit-scrollbar-thumb {
+    background: #cfd8e3;
+    border-radius: 8px;
+}
+
+html, body {
+    height: 100%;
+}
+.container.mt-4 {
+    flex: 1 0 auto;
+} 

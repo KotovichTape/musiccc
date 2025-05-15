@@ -1,0 +1,27 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">Аренда Оборудования</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if request.user.is_authenticated %}
+                    {% if request.user.client %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Мой профиль</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'rental_history' %}">Мои аренды</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'equipment_list' %}">Каталог</a></li>
+                    {% elif request.user.employee %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'manage_rental_requests' %}">Заявки</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'equipment_list' %}">Оборудование</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'logs' %}">Логи</a></li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link text-danger" href="{% url 'logout' %}">Выход</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Войти</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Регистрация</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

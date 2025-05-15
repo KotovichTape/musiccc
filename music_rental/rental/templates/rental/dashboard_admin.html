@@ -1,0 +1,70 @@
+{% extends "rental/base.html" %}
+
+{% block title %}Панель администратора{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Панель администратора</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card border-primary h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Управление пользователями</h5>
+                    <p class="card-text">Управление пользователями системы (клиенты, сотрудники).</p>
+                    <a href="{% url 'manage_table' table_name='clients' %}" class="btn btn-outline-primary btn-sm me-2">Клиенты</a>
+                    <a href="{% url 'manage_table' table_name='employees' %}" class="btn btn-outline-primary btn-sm">Сотрудники</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-success h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-success">Управление оборудованием</h5>
+                    <p class="card-text">Управление музыкальным оборудованием, его категориями и статусом.</p>
+                    <a href="{% url 'manage_table' table_name='equipment' %}" class="btn btn-outline-success btn-sm">Оборудование</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-info h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-info">Управление арендой</h5>
+                    <p class="card-text">Управление заявками на аренду и договорами.</p>
+                    <a href="{% url 'manage_table' table_name='rental_requests' %}" class="btn btn-outline-info btn-sm me-2">Заявки</a>
+                    <a href="{% url 'manage_table' table_name='contracts' %}" class="btn btn-outline-info btn-sm">Договоры</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-warning h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">Технические отчеты</h5>
+                    <p class="card-text">Просмотр технических отчетов и статистики системы.</p>
+                    <a href="{% url 'rental_reports' %}" class="btn btn-outline-warning btn-sm">Отчёты аренды</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-danger h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-danger">Управление базой данных</h5>
+                    <p class="card-text">Экспорт и импорт базы данных системы.</p>
+                    <a href="{% url 'backup_database' %}" class="btn btn-outline-danger btn-sm">Управление базой данных</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-secondary h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-secondary">Администрирование Django</h5>
+                    <p class="card-text">Доступ к стандартной административной панели Django.</p>
+                    <a href="/admin/" class="btn btn-outline-secondary btn-sm" target="_blank">Админ-панель Django</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4 d-flex justify-content-end">
+        <a href="{% url 'logout' %}" class="btn btn-danger">Выйти</a>
+    </div>
+</div>
+{% endblock %}

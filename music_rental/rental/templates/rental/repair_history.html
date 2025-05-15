@@ -1,0 +1,58 @@
+{% extends "rental/base.html" %}
+
+{% block title %}История ремонтов{% endblock %}
+
+{% block content %}
+<h2>История ремонтов оборудования</h2>
+
+{% if repairs %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Оборудование</th>
+            <th>Дата начала</th>
+            <th>Дата завершения</th>
+            <th>Статус</th>
+            <th>Описание</th>
+            <th>Стоимость</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for repair in repairs %}
+        <tr>
+            <td>{{ repair.equipment.name }}</td>
+            <td>{{ repair.created_at|date:"d.m.Y" }}</td>
+            <td>
+                {% if repair.status == 'completed' %}
+                    {{ repair.updated_at|date:"d.m.Y" }}
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+            <td>
+                {% if repair.status == 'in_progress' %}
+                    🟡 В процессе
+                {% elif repair.status == 'completed' %}
+                    🟢 Завершен
+                {% else %}
+                    ⚪ Ожидает
+                {% endif %}
+            </td>
+            <td>{{ repair.description }}</td>
+            <td>
+                {% if repair.repair_cost %}
+                    {{ repair.repair_cost }} ₽
+                {% else %}
+                    -
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>У вас пока нет истории ремонтов.</p>
+{% endif %}
+
+<a href="{% url 'dashboard_technician' %}" class="btn btn-secondary">Вернуться в кабинет</a>
+{% endblock %} 

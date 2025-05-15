@@ -1,0 +1,18 @@
+{% extends "rental/base.html" %}
+
+{% block content %}
+<h2>Профиль пользователя</h2>
+
+{% if profile %}
+    <p>Имя пользователя: {{ request.user.username }}</p>
+    <p>Email: {{ request.user.email }}</p>
+    <p>Телефон: {{ profile.phone }}</p>
+    {% if profile.role %}
+        <p>Роль: {{ profile.get_role_display }}</p>
+    {% endif %}
+    <a href="{% url 'edit_profile' %}">Редактировать профиль</a>
+{% else %}
+    <p>Профиль не найден.</p>
+{% endif %}
+
+{% endblock %}
