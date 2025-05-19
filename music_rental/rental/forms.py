@@ -5,6 +5,8 @@ from .models import (
     Client, Employee, RentalRequest, Contract, Invoice,
     EquipmentCheck, EquipmentRepair, RepairInvoice
 )
+import re
+from django.core.exceptions import ValidationError
 
 class SimpleUserCreationForm(forms.ModelForm):
     username = forms.CharField(label='Имя пользователя')
@@ -14,6 +16,31 @@ class SimpleUserCreationForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'password', 'phone')
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        
+        # Проверка минимальной длины
+        if len(password) < 8:
+            raise ValidationError('Пароль должен содержать не менее 8 символов.')
+        
+        # Проверка наличия хотя бы одной цифры
+        if not re.search(r'\d', password):
+            raise ValidationError('Пароль должен содержать хотя бы одну цифру.')
+        
+        # Проверка наличия хотя бы одной буквы в верхнем регистре
+        if not re.search(r'[A-Z]', password):
+            raise ValidationError('Пароль должен содержать хотя бы одну заглавную букву.')
+        
+        # Проверка наличия хотя бы одной буквы в нижнем регистре
+        if not re.search(r'[a-z]', password):
+            raise ValidationError('Пароль должен содержать хотя бы одну строчную букву.')
+        
+        # Проверка наличия хотя бы одного специального символа
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            raise ValidationError('Пароль должен содержать хотя бы один специальный символ (!@#$%^&*(),.?":{}|<>).')
+        
+        return password
 
     def save(self, commit=True):
         user = User.objects.create_user(
@@ -27,7 +54,11 @@ class RegistrationForm(SimpleUserCreationForm):
 
 class LoginForm(forms.Form):
     username = forms.CharField(label='Имя пользователя')
-    password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
+    password = forms.CharField(
+        label='Пароль', 
+        widget=forms.PasswordInput,
+        help_text='Пароль должен содержать не менее 8 символов, включая цифры, заглавные и строчные буквы, и специальные символы.'
+    )
 
 class RentalRequestForm(forms.ModelForm):
     class Meta:

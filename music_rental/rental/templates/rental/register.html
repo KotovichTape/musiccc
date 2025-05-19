@@ -57,6 +57,16 @@
       <div>
         {{ form.password.label_tag }}
         <input type="password" name="password" required placeholder="Пароль" class="form-control" />
+        <small class="text-muted">
+          Пароль должен содержать не менее 8 символов, включая цифры, заглавные и строчные буквы, и специальные символы.
+        </small>
+        {% if form.password.errors %}
+        <div class="text-danger">
+          {% for error in form.password.errors %}
+            {{ error }}
+          {% endfor %}
+        </div>
+        {% endif %}
       </div>
       <div>
         {{ form.role.label_tag }}
